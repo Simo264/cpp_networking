@@ -1,23 +1,10 @@
 #ifndef HTTP_H
 #define HTTP_H
+
 #include <string>
+#include <curl/curl.h>
 
-enum class HttpMethod;
+void make_get_request(CURL* curl, const std::string& url);
+void make_post_request(CURL* curl, const std::string& url);
 
-class Http
-{
-private:
-  HttpMethod method;
-  std::string url;  
-
-public:
-  Http(HttpMethod, const std::string& url);
-  ~Http();
-
-  void SetMethod(HttpMethod m);
-  void SetString(const std::string& url);
-
-
-  enum class HttpMethod : unsigned short { GET, POST };
-};
 #endif
