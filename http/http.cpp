@@ -5,15 +5,15 @@
 #include <string>
 #include <curl/curl.h>
 
-static size_t write_callback(char *data, size_t size, size_t nmemb, void *stream)
+static size_t get_request_callback(char *data, size_t size, size_t nmemb, void *stream)
 {
 
   return fwrite(data, size, nmemb, (FILE *)stream);
 }
 
-void make_get_request(CURL* curl, const std::string& url)
+void make_get_request(CURL* curl, const char* url)
 {
-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_URL, url);
 
   /* Display verbose information */
   curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -22,9 +22,9 @@ void make_get_request(CURL* curl, const std::string& url)
   curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
 
   /* send all data to this function  */
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_request_callback);
 
-  FILE* file = fopen(url.substr(8).c_str(), "wb");
+  FILE* file = fopen(url + 8, "wb");
 
   /* we want the body be written to this file handle instead of stdout */
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
@@ -34,7 +34,13 @@ void make_get_request(CURL* curl, const std::string& url)
 
   curl_easy_cleanup(curl);
 }
-void make_post_request(CURL* curl, const std::string& url)
+void make_post_request(CURL* curl, const char* url)
 {
-  std::cout << "to do make_post_request...\n";
+  curl_easy_setopt(curl, CURLOPT_URL, "http://postit.example.com/moo.cgi");
+  
+  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=daniel&project=curl");
+
+  curl_easy_perform(curl);
+
+  curl_easy_cleanup(curl);
 }
