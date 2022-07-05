@@ -11,6 +11,7 @@ static size_t get_request_callback(char *data, size_t size, size_t nmemb, void *
   return fwrite(data, size, nmemb, (FILE *)stream);
 }
 
+
 void make_get_request(CURL* curl, const char* url)
 {
   curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -36,11 +37,16 @@ void make_get_request(CURL* curl, const char* url)
 }
 void make_post_request(CURL* curl, const char* url)
 {
-  curl_easy_setopt(curl, CURLOPT_URL, "http://postit.example.com/moo.cgi");
+  const std::string str_url = url; 
+  const std::string page = str_url.substr(0, str_url.find('?'));  
+
+  std::cout << page << std::endl;
+
+  // curl_easy_setopt(curl, CURLOPT_URL, "https://httpbin.org/post?name=daniel&project=curl");
   
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=daniel&project=curl");
+  //curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=daniel&project=curl");
 
-  curl_easy_perform(curl);
+  //curl_easy_perform(curl);
 
-  curl_easy_cleanup(curl);
+  //curl_easy_cleanup(curl);
 }
