@@ -22,8 +22,8 @@ int main(int argc, char** argv)
   const std::string method = argv[1];
   const std::string url = argv[2];
   const std::map<const std::string, std::function<void()>> mapping = {
-    std::make_pair( "GET", std::bind(make_get_request, curl, url) ),
-    std::make_pair( "POST", std::bind(make_post_request, curl, url) )
+    std::make_pair( "GET", std::bind(make_get_request, curl, url.c_str()) ),
+    std::make_pair( "POST", std::bind(make_post_request, curl, url.c_str()) )
   };
 
   
