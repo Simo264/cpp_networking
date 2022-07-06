@@ -14,7 +14,7 @@
 
 - **POST**:
   ```
-  http-request POST [ URL ]?{args...}
+  http-request POST [ URL | DOMAIN ]?{args...}
   ```
   The response will be redirected into file *response-post.txt*.
   
