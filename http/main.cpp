@@ -19,17 +19,17 @@ int main(int argc, char** argv)
   curl_global_init(CURL_GLOBAL_DEFAULT);
   CURL* curl = curl_easy_init();
 
-  const std::string cli_method = argv[1];
-  const std::string cli_url = argv[2];
+  const std::string method = argv[1];
+  const std::string url = argv[2];
   const std::map<const std::string, std::function<void()>> mapping = {
-    std::make_pair( "GET", std::bind(make_get_request, curl, cli_url.c_str()) ),
-    std::make_pair( "POST", std::bind(make_post_request, curl, cli_url.c_str()) )
+    std::make_pair( "GET", std::bind(make_get_request, curl, url) ),
+    std::make_pair( "POST", std::bind(make_post_request, curl, url) )
   };
 
   
   try
   {
-    const std::function<void()> function = mapping.at(cli_method);
+    const std::function<void()>& function = mapping.at(method);
     function();
   }
   catch(const std::out_of_range& e)

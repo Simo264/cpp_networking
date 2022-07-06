@@ -12,9 +12,9 @@ static size_t get_request_callback(char *data, size_t size, size_t nmemb, void *
 }
 
 
-void make_get_request(CURL* curl, const char* url)
+void make_get_request(CURL* curl, const std::string& url)
 {
-  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
   /* Display verbose information */
   curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -25,7 +25,7 @@ void make_get_request(CURL* curl, const char* url)
   /* send all data to this function  */
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, get_request_callback);
 
-  FILE* file = fopen(url + 8, "wb");
+  FILE* file = fopen("response.txt", "wb");
 
   /* we want the body be written to this file handle instead of stdout */
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
@@ -35,18 +35,28 @@ void make_get_request(CURL* curl, const char* url)
 
   curl_easy_cleanup(curl);
 }
-void make_post_request(CURL* curl, const char* url)
+void make_post_request(CURL* curl, const std::string& url)
 {
-  const std::string str_url = url; 
-  const std::string page = str_url.substr(0, str_url.find('?'));  
+  const int index = url.find('?');
 
-  std::cout << page << std::endl;
+  // "https://httpbin.org/post"
+  if(index == std::string::npos) 
+  {
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, 0);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "");
+  }
+  // "https://httpbin.org/post?name=daniel&project=curl"
+  else
+  {
+    const std::string& args = url.substr(index+1, url.size());
 
-  // curl_easy_setopt(curl, CURLOPT_URL, "https://httpbin.org/post?name=daniel&project=curl");
+    curl_easy_setopt(curl, CURLOPT_URL, url.substr(0, index).c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, args.size());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, args.c_str());
+  }
   
-  //curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "name=daniel&project=curl");
+  curl_easy_perform(curl);
 
-  //curl_easy_perform(curl);
-
-  //curl_easy_cleanup(curl);
+  curl_easy_cleanup(curl);
 }
