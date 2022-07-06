@@ -1,7 +1,23 @@
-HTTP Requests:
+# HTTP Requests:
 
-1. GET: 
-  ```http-request GET [ URL ]```
-  The response will be redirected into file "response.txt"
+- **GET**: 
+  ```
+  http-request GET [ URL | DOMAIN ]
+  ```
+  The response will be redirected into file *response-get.txt*.
+  
+  ### EXAMPLES:
+  - http-request GET https://example.com/
+  - http-request GET example.com
+  
+  
 
-2. POST:
+- **POST**:
+  ```
+  http-request POST [ URL | DOMAIN ]?{args...}
+  ```
+  The response will be redirected into file *response-post.txt*.
+  
+  ### EXAMPLES:
+  - http-request POST https://httpbin.org/post
+  - http-request POST https://httpbin.org/post?name=john&p=123
