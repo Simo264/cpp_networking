@@ -6,7 +6,7 @@
   ```
   netw HTTP GET [ URL | DOMAIN ]
   ```
-  The response will be redirected into file *response-get.txt*.
+  The response will be redirected into file *http-get-response.txt*.
   
   **EXAMPLES**:
   - netw HTTP GET https://example.com/
@@ -16,7 +16,7 @@
   ```
   netw HTTP POST [ URL | DOMAIN ]?{args...}
   ```
-  The response will be redirected into file *response-post.txt*.
+  The response will be redirected into file *http-get-response.txt*.
   
   **EXAMPLES**:
   - netw HTTP POST https://httpbin.org/post
