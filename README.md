@@ -1,23 +1,23 @@
-# HTTP Requests:
+# C++ networking
+
+## HTTP Requests:
 
 - **GET**: 
   ```
-  http-request GET [ URL | DOMAIN ]
+  netw HTTP GET [ URL | DOMAIN ]
   ```
   The response will be redirected into file *response-get.txt*.
   
   ### EXAMPLES:
-  - http-request GET https://example.com/
-  - http-request GET example.com
+  - netw HTTP GET https://example.com/
+  - netw HTTP GET example.com
   
-  
-
 - **POST**:
   ```
-  http-request POST [ URL | DOMAIN ]?{args...}
+  netw HTTP POST [ URL | DOMAIN ]?{args...}
   ```
   The response will be redirected into file *response-post.txt*.
   
   ### EXAMPLES:
-  - http-request POST https://httpbin.org/post
-  - http-request POST https://httpbin.org/post?name=john&p=123
+  - netw HTTP POST https://httpbin.org/post
+  - netw HTTP POST https://httpbin.org/post?name=john&p=123
