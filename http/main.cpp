@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
   if(argc < 3)
   {
-    PRINT_TEXT("Error: argc < 3. Exit...")
+    PRINT_TEXT("http-request <method> <url|domain>")
     return -1;
   }
 
