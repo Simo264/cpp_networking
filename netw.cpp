@@ -3,7 +3,7 @@
 #include <map>
 #include <functional>
 #include <curl/curl.h>
-#include "http.h"
+#include "http/http.h"
 
 #define PRINT_TEXT(x) std::cout << std::string(x) << std::endl;
 #define PRINT_ERROR(x) std::cerr << std::string(x) << std::endl;
@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 {
   if(argc < 3)
   {
-    PRINT_TEXT("http-request <method> <url|domain>")
+    PRINT_TEXT("netw <method> <url | domain>")
     return -1;
   }
 

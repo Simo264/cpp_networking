@@ -37,7 +37,6 @@ void make_get_request(CURL* curl, const char* url)
 }
 void make_post_request(CURL* curl, const char* url)
 {
-  const size_t len_url = strlen(url);
   const char* args = strchr(url, '?');
 
   // // "https://httpbin.org/post"
