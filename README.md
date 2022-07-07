@@ -2,7 +2,7 @@
 
 ## HTTP Requests:
 
-- ### GET: 
+- ### GET
   ```
   netw HTTP GET [ URL | DOMAIN ]
   ```
@@ -12,7 +12,7 @@
   - netw HTTP GET https://example.com/
   - netw HTTP GET example.com
   
-- ### POST:
+- ### POST
   ```
   netw HTTP POST [ URL | DOMAIN ]?{args...}
   ```
