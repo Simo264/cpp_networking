@@ -10,4 +10,7 @@ bool make_get_request(
 bool make_post_request(
   CURL* curl, const char* url, std::string& buffer_header, std::string& buffer_body);
 
+bool make_delete_request(
+  CURL* curl, const char* url, std::string& buffer_header, std::string& buffer_body);
+
 #endif

@@ -14,6 +14,9 @@ private:
   const wxPoint WINDOW_POS { 50, 50 };
   const wxSize WINDOW_SIZE { 800, 600 };
 
+  wxMenuBar* menu_bar = nullptr;
+  wxMenu* file_menu = nullptr;
+
   wxPanel* panel_navbar = nullptr;
   wxScrolledWindow* panel_header = nullptr;
   wxScrolledWindow* panel_body = nullptr;
@@ -33,8 +36,11 @@ private:
   std::string buffer_header;
   std::string buffer_body;
 
+  void add_menubar();
   void init_frame();
   void buttonsend_event(wxCommandEvent& event);
 
   void on_exit(wxCommandEvent& event);
+  void on_save(wxCommandEvent& event);
+  void on_open(wxCommandEvent& event);
 };

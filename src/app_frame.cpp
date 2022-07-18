@@ -5,18 +5,30 @@
 #include <functional>
 #include <curl/curl.h>
 
+#define GET_REQUEST "GET"
+#define POST_REQUEST "POST"
+#define DELETE_REQUEST "DELETE"
+
+static const wxString requests[] = {
+  GET_REQUEST,
+  POST_REQUEST,
+  DELETE_REQUEST
+};
+
 static const std::map<
   const std::string, 
   std::function<bool(CURL*,const char*,std::string&,std::string&)>
 > callback = { 
-  std::make_pair("GET", make_get_request),
-  std::make_pair("POST", make_post_request)
+  std::make_pair(GET_REQUEST, make_get_request),
+  std::make_pair(POST_REQUEST, make_post_request),
+  std::make_pair(DELETE_REQUEST, make_delete_request)
 };
 
 
 AppFrame::AppFrame() : 
   wxFrame(NULL, wxID_ANY, wxT("Hello World"), WINDOW_POS, WINDOW_SIZE)
 {
+  add_menubar();
   init_frame();
 
   curl_global_init(CURL_GLOBAL_ALL);
@@ -24,19 +36,35 @@ AppFrame::AppFrame() :
 
   btn_send->Bind(wxEVT_BUTTON, &AppFrame::buttonsend_event, this);
   Bind(wxEVT_MENU, &AppFrame::on_exit, this, wxID_EXIT);
+  Bind(wxEVT_MENU, &AppFrame::on_save, this, wxID_SAVE);
+  Bind(wxEVT_MENU, &AppFrame::on_open, this, wxID_OPEN);
 }
 
+void AppFrame::add_menubar()
+{
+  menu_bar = new wxMenuBar();
 
+  // File Menu
+  file_menu = new wxMenu();
+  file_menu->Append(wxID_OPEN, wxT("&Open"));
+  file_menu->Append(wxID_SAVE, wxT("&Save"));
+  
+  file_menu->AppendSeparator();
+  file_menu->Append(wxID_EXIT, wxT("&Quit"));
+  menu_bar->Append(file_menu, wxT("&File"));
+
+  SetMenuBar(menu_bar);
+}
 void AppFrame::init_frame()
 {
   panel_navbar = new wxPanel(
     this, wxID_ANY, wxDefaultPosition, wxSize{WINDOW_SIZE.GetWidth(), WINDOW_SIZE.GetHeight() / 4});
   {
-    const int n = 3;
-    const wxString choices[] = { "GET", "POST", "DELETE" };
+    const int n = sizeof(requests) / sizeof(requests[0]);
 
     btn_send = new wxButton(panel_navbar, wxID_OK, wxT("Send")); 
-    options = new wxRadioBox(panel_navbar, wxID_ANY, wxT("Options"), wxDefaultPosition, wxDefaultSize, n, choices);
+    options = new wxRadioBox(
+      panel_navbar, wxID_ANY, wxT("Options"), wxDefaultPosition, wxDefaultSize, n, requests);
     
     input_text = new wxTextCtrl(panel_navbar, wxID_ANY, wxT(""), wxDefaultPosition, wxSize{300, 35});
     input_text->SetHint("url here: https://example.com");
@@ -113,6 +141,14 @@ void AppFrame::buttonsend_event(wxCommandEvent& event)
   text_body->SetLabel(buffer_body);
 }
 
+void AppFrame::on_save(wxCommandEvent& event)
+{
+  wxLogInfo("On save event");
+}
+void AppFrame::on_open(wxCommandEvent& event)
+{
+  wxLogInfo("On open event");
+}
 void AppFrame::on_exit(wxCommandEvent& event)
 {
   curl_easy_cleanup(curl);
