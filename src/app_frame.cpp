@@ -3,7 +3,9 @@
 
 #include <map>
 #include <functional>
+#include <fstream>
 #include <curl/curl.h>
+#include <wx/filedlg.h> 
 
 #define GET_REQUEST "GET"
 #define POST_REQUEST "POST"
@@ -24,7 +26,6 @@ static const std::map<
   std::make_pair(DELETE_REQUEST, make_delete_request)
 };
 
-
 AppFrame::AppFrame() : 
   wxFrame(NULL, wxID_ANY, wxT("Hello World"), WINDOW_POS, WINDOW_SIZE)
 {
@@ -35,9 +36,8 @@ AppFrame::AppFrame() :
   curl = curl_easy_init();
 
   btn_send->Bind(wxEVT_BUTTON, &AppFrame::buttonsend_event, this);
-  Bind(wxEVT_MENU, &AppFrame::on_exit, this, wxID_EXIT);
-  Bind(wxEVT_MENU, &AppFrame::on_save, this, wxID_SAVE);
-  Bind(wxEVT_MENU, &AppFrame::on_open, this, wxID_OPEN);
+  btn_save_header->Bind(wxEVT_BUTTON, &AppFrame::buttonsave_header, this);
+  btn_save_body->Bind(wxEVT_BUTTON, &AppFrame::buttonsave_body, this);
 }
 
 void AppFrame::add_menubar()
@@ -46,8 +46,7 @@ void AppFrame::add_menubar()
 
   // File Menu
   file_menu = new wxMenu();
-  file_menu->Append(wxID_OPEN, wxT("&Open"));
-  file_menu->Append(wxID_SAVE, wxT("&Save"));
+  file_menu->Append(wxID_SAVE, wxT("&Save on file"));
   
   file_menu->AppendSeparator();
   file_menu->Append(wxID_EXIT, wxT("&Quit"));
@@ -102,25 +101,43 @@ void AppFrame::init_frame()
     panel_body->SetScrollRate(5, 5);
   }
 
-  wxStaticBox* title_header = new wxStaticBox(
-    this, wxID_ANY, wxT("Header"), wxDefaultPosition, wxSize{WINDOW_SIZE.GetWidth(), 25});
-  title_header->SetFont(wxFont{12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD});
+  wxBoxSizer* v_sizer = new wxBoxSizer(wxVERTICAL);
+  v_sizer->Add(panel_navbar, 0, wxALL | wxEXPAND, 1);
+  // title header + button save header
+  {
+    wxStaticBox* title = new wxStaticBox(
+      this, wxID_ANY, wxT("Header"), wxDefaultPosition, wxSize{WINDOW_SIZE.GetWidth(), 25});
+    title->SetFont(wxFont{12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD});
 
-  wxStaticBox* title_body = new wxStaticBox(
-    this, wxID_ANY, wxT("Body"), wxDefaultPosition, wxSize{WINDOW_SIZE.GetWidth(), 25});
-  title_body->SetFont(wxFont{12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD});
+    btn_save_header = new wxButton(this, wxID_ANY, wxT("Save header"));
+    btn_save_header->Enable(false);
 
-  wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-  sizer->Add(panel_navbar, 0, wxALL | wxEXPAND, 1);
-  
-  sizer->Add(title_header, 0, wxALL | wxEXPAND, 1);
-  sizer->Add(panel_header, 1, wxALL | wxEXPAND, 1);
-  sizer->AddSpacer(20);
+    wxBoxSizer* h_sizer = new wxBoxSizer(wxHORIZONTAL);
+    h_sizer->Add(title,1, wxALL | wxEXPAND, 1);
+    h_sizer->AddSpacer(20);
+    h_sizer->Add(btn_save_header,0, wxALL | wxEXPAND, 1);
+    v_sizer->Add(h_sizer, 0, wxALL | wxEXPAND, 1);
+  }
+  v_sizer->Add(panel_header, 1, wxALL | wxEXPAND, 1);
+  v_sizer->AddSpacer(20);
 
-  sizer->Add(title_body, 0, wxALL | wxEXPAND, 1);
-  sizer->Add(panel_body, 1, wxALL | wxEXPAND, 1);
+  // title body + button save body
+  {
+    wxStaticBox* title = new wxStaticBox(
+      this, wxID_ANY, wxT("Body"), wxDefaultPosition, wxSize{WINDOW_SIZE.GetWidth(), 25});
+    title->SetFont(wxFont{12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD});
 
-  SetSizerAndFit(sizer);
+    btn_save_body = new wxButton(this, wxID_ANY, wxT("Save body"));
+    btn_save_body->Enable(false);
+
+    wxBoxSizer* h_sizer = new wxBoxSizer(wxHORIZONTAL);
+    h_sizer->Add(title,1, wxALL | wxEXPAND, 1);
+    h_sizer->AddSpacer(20);
+    h_sizer->Add(btn_save_body, 0, wxALL | wxEXPAND, 1);
+    v_sizer->Add(h_sizer, 0, wxALL | wxEXPAND, 1);
+  }
+  v_sizer->Add(panel_body, 1, wxALL | wxEXPAND, 1);
+  SetSizerAndFit(v_sizer);
 }
 
 void AppFrame::buttonsend_event(wxCommandEvent& event)
@@ -139,19 +156,47 @@ void AppFrame::buttonsend_event(wxCommandEvent& event)
 
   text_header->SetLabel(buffer_header);
   text_body->SetLabel(buffer_body);
-}
 
-void AppFrame::on_save(wxCommandEvent& event)
-{
-  wxLogInfo("On save event");
+  btn_save_header->Enable(!buffer_header.empty());
+  btn_save_body->Enable(!buffer_body.empty());
 }
-void AppFrame::on_open(wxCommandEvent& event)
+void AppFrame::buttonsave_header(wxCommandEvent& event)
 {
-  wxLogInfo("On open event");
+  const wxString filename = wxFileSelector("Choose a file to save header response");
+  if (filename.empty())
+  {
+    wxLogError("Error on wxFileSelector");
+    return;
+  }
+
+  std::ofstream file(filename.c_str());
+  if(!file)
+  {
+    wxLogError("Error on opening file");
+    return;
+  }
+
+  file.write(buffer_header.c_str(), buffer_header.size());
+  file.close();
+  wxLogInfo("Done!");
 }
-void AppFrame::on_exit(wxCommandEvent& event)
+void AppFrame::buttonsave_body(wxCommandEvent& event)
 {
-  curl_easy_cleanup(curl);
-  curl_global_cleanup();
-  Close(true);
+  const wxString filename = wxFileSelector("Choose a file to save body response");
+  if (filename.empty())
+  {
+    wxLogError("Error on wxFileSelector");
+    return;
+  }
+
+  std::ofstream file(filename.c_str());
+  if(!file)
+  {
+    wxLogError("Error on opening file");
+    return;
+  }
+
+  file.write(buffer_body.c_str(), buffer_body.size());
+  file.close();
+  wxLogInfo("Done!");
 }

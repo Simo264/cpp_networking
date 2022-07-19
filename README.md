@@ -2,5 +2,5 @@
 
 # Prerequisites
 Before compile programm you need to install:
-- libcurl
+- libcurl C++
 - wxWidgets 

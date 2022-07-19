@@ -1,10 +1,8 @@
 CXX_STANDARD = c++17
 CXX_FLAGS = -std=${CXX_STANDARD} \
 			-Wall \
-			-Wextra \
 			-Wshadow \
 			-Wunreachable-code \
-			-Wconversion \
 			-flto
 
 CURL = -lcurl
@@ -22,6 +20,9 @@ $(TARGET): $(OBJ_FILES)
 $(OBJ_DIR)%.o: %.cpp
 	g++ $(CXX_FLAGS) $(WXCONFIG_CXXFLAGS) -c $< -o $@ 
 
-.PHONY: clean
-clean:
+.PHONY: clean clean-full
+clean-full:
 	rm -rf $(TARGET) $(OBJ_FILES)
+
+clean:
+	rm -rf $(OBJ_FILES)

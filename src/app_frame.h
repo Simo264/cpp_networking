@@ -4,7 +4,6 @@
 #include <string>
 #include <curl/curl.h>
 
-
 class AppFrame : public wxFrame
 {
 public:
@@ -23,6 +22,8 @@ private:
 
   wxTextCtrl* input_text = nullptr;
   wxButton* btn_send = nullptr;
+  wxButton* btn_save_header = nullptr;
+  wxButton* btn_save_body = nullptr;
   wxRadioBox* options = nullptr;
 
   wxString str_header;
@@ -38,9 +39,8 @@ private:
 
   void add_menubar();
   void init_frame();
-  void buttonsend_event(wxCommandEvent& event);
 
-  void on_exit(wxCommandEvent& event);
-  void on_save(wxCommandEvent& event);
-  void on_open(wxCommandEvent& event);
+  void buttonsend_event(wxCommandEvent& event);
+  void buttonsave_header(wxCommandEvent& event);
+  void buttonsave_body(wxCommandEvent& event);
 };
